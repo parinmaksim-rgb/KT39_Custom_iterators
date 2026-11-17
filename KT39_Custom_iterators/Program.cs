@@ -1,72 +1,9 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+using KT39_Custom_iterators;
 
-public class CircularBuffer<T> : IEnumerable<T>
+public class Program
 {
-    private readonly T[] _buffer;
-    private int _head;
-    private int _tail;
-    private int _size;
-
-    public int Capacity => _buffer.Length;
-    public int Count => _size;
-
-    public CircularBuffer(int capacity)
-    {
-        if (capacity <= 0)
-            throw new ArgumentException("Capacity must be greater than zero.", nameof(capacity));
-
-        _buffer = new T[capacity];
-        _head = 0;
-        _tail = 0;
-        _size = 0;
-    }
-
-    public void Add(T item)
-    {
-        if (_buffer.Length == 0) return;
-
-        _buffer[_tail] = item;
-        _tail = (_tail + 1) % _buffer.Length;
-
-        if (_size < _buffer.Length)
-        {
-            _size++;
-        }
-        else
-        {
-            _head = (_head + 1) % _buffer.Length;
-        }
-    }
-
-    public IEnumerator<T> GetEnumerator()
-    {
-        for (int i = 0; i < _size; i++)
-        {
-            int index = (_head + i) % _buffer.Length;
-            yield return _buffer[index];
-        }
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
-
-    public IEnumerable<T> Reverse()
-    {
-        for (int i = _size - 1; i >= 0; i--)
-        {
-            int index = (_head + i) % _buffer.Length;
-            yield return _buffer[index];
-        }
-    }
-}
-
-class Program
-{
-    static void Main()
+    public static void Main()
     {
         while (true)
         {
@@ -82,21 +19,19 @@ class Program
 
             try
             {
-                if (choice == "1")
+                switch (choice)
                 {
-                    RunDemoTest();
-                }
-                else if (choice == "2")
-                {
-                    RunInteractiveMode();
-                }
-                else if (choice == "3")
-                {
-                    break;
-                }
-                else
-                {
-                    Console.WriteLine("Ошибка: введено неверное значение. Пожалуйста, выберите от 1 до 3.");
+                    case "1":
+                        RunDemoTest();
+                        break;
+                    case "2":
+                        RunInteractiveMode();
+                        break;
+                    case "3":
+                        return;
+                    default:
+                        Console.WriteLine("Ошибка: введено неверное значение. Пожалуйста, выберите от 1 до 3.");
+                        break;
                 }
             }
             catch (Exception ex)
@@ -109,7 +44,7 @@ class Program
         }
     }
 
-    static void RunDemoTest()
+    private static void RunDemoTest()
     {
         Console.WriteLine("--- Автоматический тест по варианту ---");
         Console.WriteLine("Создаем буфер с ёмкостью 3.");
@@ -137,7 +72,7 @@ class Program
         Console.WriteLine();
     }
 
-    static void RunInteractiveMode()
+    private static void RunInteractiveMode()
     {
         Console.Write("Введите ёмкость буфера (целое положительное число): ");
         if (!int.TryParse(Console.ReadLine(), out int capacity) || capacity <= 0)
@@ -160,58 +95,59 @@ class Program
             string subChoice = Console.ReadLine();
             Console.WriteLine();
 
-            if (subChoice == "1")
+            switch (subChoice)
             {
-                Console.Write("Введите целое число для добавления: ");
-                if (int.TryParse(Console.ReadLine(), out int value))
-                {
-                    buffer.Add(value);
-                    Console.WriteLine($"Элемент {value} успешно добавлен.");
-                }
-                else
-                {
-                    Console.WriteLine("Ошибка: введено некорректное число.");
-                }
-            }
-            else if (subChoice == "2")
-            {
-                Console.Write("Содержимое буфера (от старого к новому): ");
-                if (buffer.Count == 0)
-                {
-                    Console.WriteLine("[Буфер пуст]");
-                }
-                else
-                {
-                    foreach (var item in buffer)
+                case "1":
+                    Console.Write("Введите целое число для добавления: ");
+                    if (int.TryParse(Console.ReadLine(), out int value))
                     {
-                        Console.Write(item + " ");
+                        buffer.Add(value);
+                        Console.WriteLine($"Элемент {value} успешно добавлен.");
                     }
-                    Console.WriteLine();
-                }
-            }
-            else if (subChoice == "3")
-            {
-                Console.Write("Содержимое буфера в обратном порядке (от нового к старому): ");
-                if (buffer.Count == 0)
-                {
-                    Console.WriteLine("[Буфер пуст]");
-                }
-                else
-                {
-                    foreach (var item in buffer.Reverse())
+                    else
                     {
-                        Console.Write(item + " ");
+                        Console.WriteLine("Ошибка: введено некорректное число.");
                     }
-                    Console.WriteLine();
-                }
-            }
-            else if (subChoice == "4")
-            {
-                break;
-            }
-            else
-            {
-                Console.WriteLine("Ошибка: неверный пункт меню.");
+                    break;
+
+                case "2":
+                    Console.Write("Содержимое буфера (от старого к новому): ");
+                    if (buffer.Count == 0)
+                    {
+                        Console.WriteLine("[Буфер пуст]");
+                    }
+                    else
+                    {
+                        foreach (var item in buffer)
+                        {
+                            Console.Write(item + " ");
+                        }
+                        Console.WriteLine();
+                    }
+                    break;
+
+                case "3":
+                    Console.Write("Содержимое буфера в обратном порядке (от нового к старому): ");
+                    if (buffer.Count == 0)
+                    {
+                        Console.WriteLine("[Буфер пуст]");
+                    }
+                    else
+                    {
+                        foreach (var item in buffer.Reverse())
+                        {
+                            Console.Write(item + " ");
+                        }
+                        Console.WriteLine();
+                    }
+                    break;
+
+                case "4":
+                    return; // Возврат в главное меню
+
+                default:
+                    Console.WriteLine("Ошибка: неверный пункт меню.");
+                    break;
             }
         }
     }
